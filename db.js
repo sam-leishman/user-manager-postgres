@@ -1,4 +1,5 @@
 // api to the database
+require('dotenv').config()
 const Pool = require('pg').Pool;
 const url = require('url');
 const DBConnectionString = process.env.DATABASE_URL;
@@ -9,8 +10,6 @@ const auth = params.auth.split(':');
 let SSL = process.env.SSL || { rejectUnauthorized: false };
 if (SSL === 'false') {
     SSL = false;
-} else if (SSL === 'true') {
-    SSL = true;
 } else if (SSL === 'heroku') {
     SSL = { rejectUnauthorized: false };
 } else {
@@ -35,46 +34,66 @@ const getUsers = (req, res) => {
     let getUsersSQL = 'select * from users'
     pool.query(getUsersSQL, (err, results) => {
         if (err) throw err;
-        console.log(results)
-        res.status(200).json(results.rows)
+        let ordered = results.rows.sort((a, b) => (a.id > b.id) ? 1 : -1)
+        res.render('users', { users: ordered })
     })
 }
 
 const addUser = (req, res) => {
+    let id;
+    const first_name = req.body.first_name;
+    const last_name = req.body.last_name;
     const email = req.body.email;
-    const name = req.body.name;
-    let addUserSQL = 'insert into users (email, name) values ($1, $2)'
-    pool.query(addUserSQL, [email, name], (err, results) => {
-        if (err) throw err;
-        console.log(results)
-        res.status(200).json(results)
+    const age = req.body.age;
+
+    pool.query('select MAX(id) from users', (err, results) => {
+        id = results.rows[0].max + 1;
+        let addUserSQL = 'insert into users (id, first_name, last_name, email, age) values ($1, $2, $3, $4, $5)'
+        pool.query(addUserSQL, [id, first_name, last_name, email, age], (err, results) => {
+            if (err) throw err;
+            res.redirect('/users')
+        })
     })
 }
 
 const deleteUser = (req, res) => {
-    const name = req.body.name;
-    let deleteUserSQL = 'delete from users where name = $1'
-    pool.query(deleteUserSQL, [name], (err, results) => {
+    const id = req.params.id;
+
+    let deleteUserSQL = 'delete from users where id = $1'
+    pool.query(deleteUserSQL, [id], (err, results) => {
         if (err) throw err;
-        console.log(results)
-        res.status(200).json(results)
+        res.redirect('/users')
     })
 }
 
+const getUserEditPage = (req, res) => {
+    let id = req.params.id
+
+    let getUserSQL = 'select * from users where id = $1';
+    pool.query(getUserSQL, [id], (err, results) => {
+        if (err) throw err
+        res.render('editUser', { user: results.rows[0] })
+    });
+}
+
 const updateUser = (req, res) => {
-    const name = req.body.name;
-    const id = req.body.id;
-    let updateUserSQL = 'update users set name = $1 where id = $2'
-    pool.query(updateUserSQL, [name, id], (err, results) => {
-        if (err) throw err;
-        console.log(results)
-        res.status(200).json(results)
-    })
+    const id = req.params.id;
+    const first_name = req.body.first_name;
+    const last_name = req.body.last_name;
+    const email = req.body.email;
+    const age = req.body.age;
+    
+    let updateUserSQL = 'update users set first_name = $2, last_name = $3, email = $4, age = $5 where id = $1';
+    pool.query(updateUserSQL, [id, first_name, last_name, email, age], (err, results) => {
+        if (err) throw err
+        res.redirect('/users')
+    });
 }
 
 module.exports = {
     getUsers,
     addUser,
     deleteUser,
+    getUserEditPage,
     updateUser
 }

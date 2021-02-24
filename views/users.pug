@@ -1,0 +1,41 @@
+extends layout
+
+block content
+    div(class='users-div')
+        h2 Users
+        form(action='/search', method='post')
+            input(name='search', placeholder='Search by first name')
+            input(type='submit')
+        table
+            tr
+                form(action='/filter', method='post')
+                    th ID
+                    th First Name 
+                        button(class='btn', type='submit', name='filter', value='firstFilter')
+                            i(class="fas fa-caret-down")
+                    th Last Name 
+                        button(class='btn', type='submit', name='filter', value='lastFilter')
+                            i(class="fas fa-caret-down")
+                    th Email 
+                        button(class='btn', type='submit', name='filter', value='emailFilter')
+                            i(class="fas fa-caret-down")
+                    th Age 
+                        button(class='btn', type='submit', name='filter', value='ageFilter')
+                            i(class="fas fa-caret-down")
+                    th.noTable 
+                        input(id='filterCheck', name='filterCheck', type='checkbox')
+                        label(for='filterCheck') Filter Descending
+            each user in users
+                tr.tableRow
+                    td #{user.id}
+                    td #{user.first_name}
+                    td #{user.last_name}
+                    td #{user.email}
+                    td #{user.age}
+                    td.noTable
+                        a(href=`/edit/${user.id}`)
+                            button
+                                i(class='far fa-edit')
+                        form(action=`/deleteUser/${user.id}`, method='post')
+                            button(type='submit')
+                                i(class='far fa-trash-alt')
