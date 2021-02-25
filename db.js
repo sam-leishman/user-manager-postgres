@@ -66,7 +66,7 @@ const deleteUser = (req, res) => {
     })
 }
 
-const getUserEditPage = (req, res) => {
+const editPage = (req, res) => {
     let id = req.params.id
 
     let getUserSQL = 'select * from users where id = $1';
@@ -90,10 +90,67 @@ const updateUser = (req, res) => {
     });
 }
 
+const sortUsers = (req, res) => {
+    const filter = req.body.filter;
+
+    if (req.body.filterCheck == 'on') {
+        if (filter == 'firstFilter') {
+            pool.query('select * from users order by first_name DESC', (err, results) => {
+                if (err) throw err;
+                res.render('users', { users: results.rows })
+            })
+        }
+        if (filter == 'lastFilter') {
+            pool.query('select * from users order by last_name DESC', (err, results) => {
+                if (err) throw err;
+                res.render('users', { users: results.rows })
+            })
+        }
+        if (filter == 'emailFilter') {
+            pool.query('select * from users order by email DESC', (err, results) => {
+                if (err) throw err;
+                res.render('users', { users: results.rows })
+            })
+        }
+        if (filter == 'ageFilter') {
+            pool.query('select * from users order by age DESC', (err, results) => {
+                if (err) throw err;
+                res.render('users', { users: results.rows })
+            })
+        }
+    } else {
+        if (filter == 'firstFilter') {
+            pool.query('select * from users order by first_name ASC', (err, results) => {
+                if (err) throw err;
+                res.render('users', { users: results.rows })
+            })
+        }
+        if (filter == 'lastFilter') {
+            pool.query('select * from users order by last_name ASC', (err, results) => {
+                if (err) throw err;
+                res.render('users', { users: results.rows })
+            })
+        }
+        if (filter == 'emailFilter') {
+            pool.query('select * from users order by email ASC', (err, results) => {
+                if (err) throw err;
+                res.render('users', { users: results.rows })
+            })
+        }
+        if (filter == 'ageFilter') {
+            pool.query('select * from users order by age ASC', (err, results) => {
+                if (err) throw err;
+                res.render('users', { users: results.rows })
+            })
+        }
+    }
+}
+
 module.exports = {
     getUsers,
     addUser,
     deleteUser,
-    getUserEditPage,
-    updateUser
+    editPage,
+    updateUser,
+    sortUsers
 }

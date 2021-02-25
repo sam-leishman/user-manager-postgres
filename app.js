@@ -24,14 +24,15 @@ app.get('/users', db.getUsers);
 
 app.post('/createUser', db.addUser);
 
-app.get('/edit/:id', db.getUserEditPage);
+app.get('/edit/:id', db.editPage);
 app.post('/edit/:id', db.updateUser);
 
 app.post('/deleteUser/:id', db.deleteUser);
 
+app.post('/filter', db.sortUsers)
+
 // app.post('/search', db.searchUser);
 
-// app.get('/sort', db.sortUsers)
 
 app.listen(port, () => {
     console.log(`Listening on port ${port}`)
