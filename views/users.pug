@@ -4,12 +4,14 @@ block content
     div(class='users-div')
         h2 Users
         form(action='/search', method='post')
-            input(name='search', placeholder='Search by first name')
+            input(name='search', placeholder='Search by first or last name')
             input(type='submit')
         table
             tr
                 form(action='/filter', method='post')
                     th ID
+                        button(class='btn', type='submit', name='filter', value='idFilter')
+                            i(class="fas fa-caret-down")
                     th First Name 
                         button(class='btn', type='submit', name='filter', value='firstFilter')
                             i(class="fas fa-caret-down")

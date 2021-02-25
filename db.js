@@ -94,6 +94,12 @@ const sortUsers = (req, res) => {
     const filter = req.body.filter;
 
     if (req.body.filterCheck == 'on') {
+        if (filter == 'idFilter') {
+            pool.query('select * from users order by id DESC', (err, results) => {
+                if (err) throw err;
+                res.render('users', { users: results.rows })
+            })
+        }
         if (filter == 'firstFilter') {
             pool.query('select * from users order by first_name DESC', (err, results) => {
                 if (err) throw err;
@@ -119,6 +125,12 @@ const sortUsers = (req, res) => {
             })
         }
     } else {
+        if (filter == 'idFilter') {
+            pool.query('select * from users order by id ASC', (err, results) => {
+                if (err) throw err;
+                res.render('users', { users: results.rows })
+            })
+        }
         if (filter == 'firstFilter') {
             pool.query('select * from users order by first_name ASC', (err, results) => {
                 if (err) throw err;
@@ -146,11 +158,22 @@ const sortUsers = (req, res) => {
     }
 }
 
+const searchUsers = (req, res) => {
+    const search = req.body.search;
+
+    let searchUsersSQL = 'select * from users where first_name = $1 OR last_name = $1'
+    pool.query(searchUsersSQL, [search], (err, results) => {
+        if (err) throw err;
+        res.render('users', { users: results.rows })
+    })
+}
+
 module.exports = {
     getUsers,
     addUser,
     deleteUser,
     editPage,
     updateUser,
-    sortUsers
+    sortUsers,
+    searchUsers
 }

@@ -31,7 +31,7 @@ app.post('/deleteUser/:id', db.deleteUser);
 
 app.post('/filter', db.sortUsers)
 
-// app.post('/search', db.searchUser);
+app.post('/search', db.searchUsers);
 
 
 app.listen(port, () => {
